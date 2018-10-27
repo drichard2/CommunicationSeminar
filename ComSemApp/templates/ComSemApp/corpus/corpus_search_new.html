@@ -1,0 +1,40 @@
+{% extends 'ComSemApp/sidebar.html' %}
+
+{% block content %}
+
+<!-- Page-Title -->
+<div class="row">
+	<div class="col-sm-12">
+		<div class="page-title-box">
+			<h4 class="page-title">
+				Corpus Search
+			</h4>
+			<div class="clearfix"></div>
+		</div>
+	</div>
+</div>
+
+<!-- search criteria -->
+<div class="row">
+  
+  <button class="btn btn-sm btn-outline-success pull-right" type="submit">
+    <span>Search <i class="ti-angle-right"></i></span>
+  </button>
+
+
+</div>
+
+<!-- results -->
+<br />
+
+<div class="row">
+	<div class="col-md-12">
+        <div class="card-box" id="searchResults" style="display: none"></div>
+	</div>
+</div>
+
+<style>
+
+</style>
+
+{% endblock %}

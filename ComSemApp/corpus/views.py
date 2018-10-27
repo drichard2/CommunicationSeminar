@@ -18,7 +18,7 @@ from ComSemApp.models import *
 @login_required
 def corpus_search(request):
     tags = Tag.objects.all()
-    template = loader.get_template('ComSemApp/corpus/corpus_search.html')
+    template = loader.get_template('ComSemApp/corpus/corpus_search_new.html')
     return HttpResponse(template.render({'tags': tags}, request))
 
 @login_required
