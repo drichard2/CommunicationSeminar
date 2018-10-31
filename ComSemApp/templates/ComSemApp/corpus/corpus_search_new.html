@@ -16,10 +16,53 @@
 
 <!-- search criteria -->
 <div class="row">
-  
-  <button class="btn btn-sm btn-outline-success pull-right" type="submit">
-    <span>Search <i class="ti-angle-right"></i></span>
-  </button>
+	<div class="col-lg-3">
+		<div class="form-group">
+			<label for="new_word">Load Word</label>
+			<input type="text" class="form-control input-sm" id="word1" name="word1" placeholder="Type a word to search">
+		</div>
+
+		<div class="form-group">
+			<label for="new_tag">Load part-of-speech tag</label>
+			<select class="form-control input-sm" id="new_tag" name="new_tag">
+				<option selected="selected" value="ALL">Full Tagset</option>
+				{% for tag in tags %}
+				<option value="{{ tag }}">{{ tag }}</option>
+				{% endfor %}
+			</select>
+		</div>
+
+	</div>
+
+	<div class="col-lg-3">
+		<div class="form-group">
+			<label for="new_word">Load Second Word (Optional)</label>
+			<input type="text" class="form-control input-sm" id="word2" name="word2" placeholder="Type another word (optional)">
+		</div>
+
+		<div class="form-group">
+			<label for="new_tag">Load part-of-speech tag</label>
+			<select class="form-control input-sm" id="new_tag" name="new_tag">
+				<option selected="selected" value="ALL">Full Tagset</option>
+				{% for tag in tags %}
+				<option value="{{ tag }}">{{ tag }}</option>
+				{% endfor %}
+			</select>
+		</div>
+	</div>
+
+  <div class="col-lg-2">
+		<br>
+		<button class="btn btn-sm btn-outline-success pull-right" type="submit">
+	    <span>Search <i class="ti-angle-right"></i></span>
+	  </button>
+
+		<br><br>
+
+		<label for="newOffset">Offset</label>
+		<input class="form-control input-sm" type="range" min="-5" max="5" value="0" id="newOffset" name="addOffset" onchange="updateTextInput(this.value);">
+		<input type="text" id="textInput" value="0"
+	</div>
 
 
 </div>
@@ -32,6 +75,12 @@
         <div class="card-box" id="searchResults" style="display: none"></div>
 	</div>
 </div>
+
+<script>
+	function updateTextInput(val) {
+		document.getElementById('textInput').value=val; // Maybe change to "none" if val is 0?
+	}
+</script>
 
 <style>
 
