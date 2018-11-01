@@ -1,3 +1,7 @@
+<!--
+author: Trevor Greenside
+-->
+
 {% extends 'ComSemApp/sidebar.html' %}
 
 {% block content %}
@@ -15,13 +19,18 @@
 </div>
 
 <!-- search criteria -->
+<form>
 <div class="row">
+
+	<!-- left most column -->
 	<div class="col-lg-3">
+
+		<!-- Space for user to enter the first word, mandatory -->
 		<div class="form-group">
 			<label for="new_word">Load Word</label>
 			<input type="text" class="form-control input-sm" id="word1" name="word1" placeholder="Type a word to search">
 		</div>
-
+		<!-- Space for user to select a part of speech tag for word 1 -->
 		<div class="form-group">
 			<label for="new_tag">Load part-of-speech tag</label>
 			<select class="form-control input-sm" id="new_tag" name="new_tag">
@@ -34,12 +43,13 @@
 
 	</div>
 
+	<!-- middle column -->
 	<div class="col-lg-3">
 		<div class="form-group">
 			<label for="new_word">Load Second Word (Optional)</label>
 			<input type="text" class="form-control input-sm" id="word2" name="word2" placeholder="Type another word (optional)">
 		</div>
-
+		<!-- Space for user to enter the second word, optional. Will not be processed if blank -->
 		<div class="form-group">
 			<label for="new_tag">Load part-of-speech tag</label>
 			<select class="form-control input-sm" id="new_tag" name="new_tag">
@@ -51,17 +61,27 @@
 		</div>
 	</div>
 
-  <div class="col-lg-2">
+	<div class="col-lg-2">
 		<br>
+
+		<!-- submit button -->
 		<button class="btn btn-sm btn-outline-success pull-right" type="submit">
-	    <span>Search <i class="ti-angle-right"></i></span>
-	  </button>
+		    <span>Search <i class="ti-angle-right"></i></span>
+		</button>
 
 		<br><br>
-
+		<!-- user specifies offset for the corpus search -->
 		<label for="newOffset">Offset</label>
-		<input class="form-control input-sm" type="range" min="-5" max="5" value="0" id="newOffset" name="addOffset" onchange="updateTextInput(this.value);">
-		<input type="text" id="textInput" value="0"
+		<input class="form-control input-sm" type="number" min="-5" max="8" value="1" id="newOffset" name="addOffset">
+		<!--
+		<input class="form-control input-sm" type="range" min="-5" max="5" value="0" id="newOffset"
+			name="addOffset" step="1" list="steplist" onchange="updateTextInput(this.value);">
+			<datalist id="steplist">
+			    <option value="0">0</option>
+			    <option>5</option>
+			    <option>-5</option>
+			</datalist>
+		<input type="text" id="textInput" value="0" -->
 	</div>
 
 
@@ -69,6 +89,10 @@
 
 <!-- results -->
 <br />
+
+<form onSubmit="JavaScript:clickButton()">
+	<input type="submit" name="firstButton" id="firstButton" value="Click me!" />
+</form>
 
 <div class="row">
 	<div class="col-md-12">
@@ -80,6 +104,24 @@
 	function updateTextInput(val) {
 		document.getElementById('textInput').value=val; // Maybe change to "none" if val is 0?
 	}
+
+	function clickButton() {
+		alert("Button clicked");
+	}
+
+	$("word1").change(function(e) {
+		e.preventDefault();
+		alert("The value has been changed");
+	});
+
+	// $(document).ready(function() {
+	// 	$("firstButton").click(function(e) {
+	// 		e.preventDefault();
+	// 		alert("The button has been clicked");
+	// 	});
+	// });
+
+
 </script>
 
 <style>
