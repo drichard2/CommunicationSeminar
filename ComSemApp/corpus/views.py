@@ -19,7 +19,7 @@ from ComSemApp.models import *
 def corpus_search(request):
     tags = Tag.objects.all()
     template = loader.get_template('ComSemApp/corpus/corpus_search_new.html')
-    return HttpResponse(template.render({'tags': tags}, request))
+    return HttpResponse(template.render({'tags': tags, 'offsetRange':range(-5,8)}, request))
 
 @login_required
 def populate_word_tag(request):
