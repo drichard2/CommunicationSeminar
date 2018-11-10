@@ -23,6 +23,7 @@ def corpus_search(request):
 
 @login_required
 def populate_word_tag(request):
+    print("Starting populate word tag")
     val = request.POST.get('val', None)
     search_type = request.POST.get('type', None)
     output = request.POST.get('output', None)

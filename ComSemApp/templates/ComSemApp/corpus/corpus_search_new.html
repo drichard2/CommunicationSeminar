@@ -1,5 +1,7 @@
 <!--
 author: Trevor Greenside
+
+note: Tags are here: http://ucrel.lancs.ac.uk/claws5tags.html
 -->
 
 {% extends 'ComSemApp/sidebar.html' %}
@@ -29,35 +31,42 @@ author: Trevor Greenside
 			<label for="word1">Enter a Word</label>
 			<input type="text" class="form-control input-sm" id="word1" name="word1" placeholder="Type a word to search">
 		</div>
-		<!-- Space for user to select a part of speech tag for word 1 -->
-		<div class="form-group">
-			<label for="new_tag">Select Part-of-Speech Tag</label>
-			<select class="form-control input-sm" id="new_tag" name="new_tag">
-				<option selected="selected" value="ALL">Full Tagset</option>
-				{% for tag in tags %}
-				<option value="{{ tag }}">{{ tag }}</option>
-				{% endfor %}
-			</select>
+		<div class="row">
+			<div class="col-sm-12 col-md-6">
+				<h4 class="m-b-10 header-title">
+					Selector
+				</h4>
+			</div>
+			<div class="col-sm-12 col-md-6">
+				<a href= "javascript:window.open('http://ucrel.lancs.ac.uk/claws7tags.html','width=700,height=650')" target="_blank" class="text-muted m-b-10 font-13 float-right">About CLAWS7 Tagset</a>
+			</div>
 		</div>
 
+		<div class="row">
+			<div class="col-12 nicescroll" id="DynamicField1" name="DynamicField1">
+				<p>Please enter a word.</p>
+			</div>
+        </div>
 	</div>
 
 	<!-- middle column -->
 	<div class="col-lg-4">
 		<div class="form-group">
-			<label for="new_word">Enter a Second Word (Optional)</label>
+			<label for="word2">Enter a Second Word (Optional)</label>
 			<input type="text" class="form-control input-sm" id="word2" name="word2" placeholder="Type another word (optional)">
 		</div>
-		<!-- Space for user to enter the second word, optional. Will not be processed if blank -->
-		<div class="form-group">
-			<label for="new_tag">Select Part-of-Speech Tag</label>
-			<select class="form-control input-sm" id="new_tag" name="new_tag">
-				<option selected="selected" value="ALL">Full Tagset</option>
-				{% for tag in tags %}
-				<option value="{{ tag }}">{{ tag }}</option>
-				{% endfor %}
-			</select>
+		<div class="row">
+			<div class="col-sm-12 col-md-6">
+				<h4 class="m-b-10 header-title">
+					Selector
+				</h4>
+			</div>
 		</div>
+		<div class="row">
+			<div class="col-12 nicescroll" id="DynamicField2" name="DynamicField2">
+				<p>Please enter a word.</p>
+			</div>
+        </div>
 	</div>
 
 	<div class="col-lg-2">
@@ -80,16 +89,6 @@ author: Trevor Greenside
 				{% endif %}
 			{% endfor %}
 		</select>
-		<!-- <input class="form-control input-sm" type="number" min="-5" max="8" value="1" id="newOffset" name="addOffset"> -->
-		<!--
-		<input class="form-control input-sm" type="range" min="-5" max="5" value="0" id="newOffset"
-			name="addOffset" step="1" list="steplist" onchange="updateTextInput(this.value);">
-			<datalist id="steplist">
-			    <option value="0">0</option>
-			    <option>5</option>
-			    <option>-5</option>
-			</datalist>
-		<input type="text" id="textInput" value="0" -->
 	</div>
 
 
@@ -105,12 +104,41 @@ author: Trevor Greenside
 </div>
 
 <script>
+
+	var searchCriteria = [];
+
 	function updateTextInput(val) {
 		document.getElementById('textInput').value=val; // Maybe change to "none" if val is 0?
 	}
 
-	function placeHolderFunction() {
-		alert("THing running");
+	function getWordPosTags(wordEntryField, resultField) {
+
+		var val = $(wordEntryField).val();
+		var type = 'word';
+		if (val == "") {
+			$(resultField).empty();
+			$(resultField).html("<p>Please enter a word.</p>");
+			return;
+		}
+
+		$(resultField).empty();
+		$.ajax({
+			type: "POST",
+			url: "{% url 'corpus:populate_word_tag' %}",
+			data: {
+				'type': type,
+				'val': val,
+				'output': 'html',
+			},
+
+			success: function(data){
+
+				$(resultField).html(data);
+			},
+			fail: function(xhr, textStatus, errorThrown) {
+				alert("Failed");
+			}
+		});
 	}
 
 	// progressTimeout tracks whether a timeout function is in progress.
@@ -121,13 +149,15 @@ author: Trevor Greenside
 			if (progressTimeout) {
 				clearTimeout(progressTimeout);
 			}
-			progressTimeout = setTimeout(placeHolderFunction, 500);
+			progressTimeout = setTimeout(getWordPosTags, 500, "#word1", "#DynamicField1");
 		});
 
-		/* save setTimeout to a variable outside of this function. Use that to
-		cancel previously called function. Google the hell out of this, find
-		examples. Something else to search for: look at things like search completion
-		or search suggestions. Loads suggested past searches, for example. */
+		$("#word2").on("keydown paste", function() {
+			if (progressTimeout) {
+				clearTimeout(progressTimeout);
+			}
+			progressTimeout = setTimeout(getWordPosTags, 500, "#word2", "#DynamicField2");
+		});
 	});
 
 
