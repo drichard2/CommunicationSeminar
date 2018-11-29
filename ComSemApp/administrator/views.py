@@ -114,16 +114,17 @@ class StudentListView(AdminViewMixin, ListView):
             print("NEW LINE")
             fields = line.split(",")
             dupeUser = False
+
+            if (fields[0] == '' or fields[0] == "" or dupeUser == True):
+                #end of file
+                rejectedLines.append(fields)
+                break
             for user in Student.objects.filter(institution=self.institution):
                 if(user.user.username== fields[2]):
                     dupeUser = True
                     print(user.user)
                     print("DUPE USER")
                     break
-            if (fields[0] == '' or fields[0] == "" or dupeUser == True):
-                #end of file
-                rejectedLines.append(fields)
-                break
             user = {
                 "first_name": fields[0],
                 "last_name": fields[1],
