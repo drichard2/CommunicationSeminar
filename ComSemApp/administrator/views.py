@@ -112,7 +112,7 @@ class StudentListView(AdminViewMixin, ListView):
         for line in lines:
             print("NEW LINE")
             fields = line.split(",")
-
+            dupeUser = False
             for user in Student.objects.filter(institution=self.institution):
                 if(user.user.username== fields[2]):
                     dupeUser = True
@@ -139,13 +139,11 @@ class StudentListView(AdminViewMixin, ListView):
         print(rejectedLines)
         messages.add_message(request, messages.ERROR, rejectedLines)
         return HttpResponseRedirect(self.success_url)
-        
+
 
     def get_queryset(self):
         
         return Student.objects.filter(institution=self.institution)
-
-    
 
 
 class CourseListView(AdminViewMixin, ListView):
