@@ -70,14 +70,9 @@ note: Tags are here: http://ucrel.lancs.ac.uk/claws5tags.html
 	</div>
 
 	<div class="col-lg-2">
-		<br>
 
-		<!-- submit button -->
-		<button class="btn btn-sm btn-outline-success pull-right" type="submit">
-		    <span>Search <i class="ti-angle-right"></i></span>
-		</button>
+		<input type="hidden" name="searchCriteria" id="searchCriteria" />
 
-		<br><br><br>
 		<!-- user specifies offset for the corpus search -->
 		<label for="newOffset">Select Offset</label>
 		<select id="newOffset" name="addOffset">
@@ -89,8 +84,14 @@ note: Tags are here: http://ucrel.lancs.ac.uk/claws5tags.html
 				{% endif %}
 			{% endfor %}
 		</select>
-	</div>
 
+		<br><br><br>
+
+		<!-- submit button -->
+		<button class="btn btn-sm btn-outline-success pull-right" type="submit">
+		    <span>Search <i class="ti-angle-right"></i></span>
+		</button>
+	</div>
 
 </div>
 
@@ -105,11 +106,45 @@ note: Tags are here: http://ucrel.lancs.ac.uk/claws5tags.html
 
 <script>
 
+	var searchCriteria = []; // check trash thing in original for how to clear values
+
 	/*
-	This function returns as a string the value in an HTML input above.
+	This function takes a value from the checkbox and saves it as a criteria for the
+	corpus search.
 	*/
-	function updateTextInput(val) {
-		document.getElementById('textInput').value=val; // Maybe change to "none" if val is 0?
+	function getCheckedValue(word_id, word_form) {
+		var newEntry = {
+			type: 'word',
+			val: word_form,
+			id_list: word_id,
+		};
+		var newEntryString = JSON.stringify(newEntry);
+		for (var entry in searchCriteria) {
+			alert(newEntryString + "  " + JSON.stringify(entry));
+			if (JSON.stringify(entry) === newEntryString) {
+				return;
+			}
+		}
+		searchCriteria.push(newEntry);
+		$('#searchCriteria').val(JSON.stringify(searchCriteria));
+		alert(JSON.stringify(searchCriteria));
+	}
+
+	/*
+	Cleans values no longer existing out of the searchCriteria array
+	*/
+	function cleanSearchCriteria() {
+		var words = [$("#word1").val(), $("#word2").val()];
+		for (var entry in searchCriteria) {
+			alert(JSON.stringify(searchCriteria));
+			// var checkedWord = JSON.stringify(entry.val);
+			// alert("Assessing " + checkedWord);
+			// if ($.inArray(checkedWord, words)) {
+			// 	alert(checkedWord + " is here");
+			// } else {
+			// 	alert("Function is running");
+			// }
+		}
 	}
 
 	/*
@@ -118,6 +153,8 @@ note: Tags are here: http://ucrel.lancs.ac.uk/claws5tags.html
 	field with check boxes for each retruned POS tag.
 	*/
 	function getWordPosTags(wordEntryField, resultField) {
+
+		cleanSearchCriteria();
 
 		var val = $(wordEntryField).val();
 		var type = 'word';
@@ -166,6 +203,19 @@ note: Tags are here: http://ucrel.lancs.ac.uk/claws5tags.html
 				clearTimeout(progressTimeout);
 			}
 			progressTimeout = setTimeout(getWordPosTags, 500, "#word2", "#DynamicField2");
+		});
+
+		$("#SubmitSearchForm").submit(function(e){
+			e.preventDefault();
+			var data = {
+				'searchCriteria': $('#searchCriteria').val(),
+				'searchType': $('[name=searchType]:checked').val(),
+			}
+			$('#searchResults').show().html("<div class='row float-middle'>Loading...</div>").load("{% url 'corpus:search_results' %}", data );
+		});
+
+		$("#result").on('click', function(){
+		    alert($(this).val());
 		});
 	});
 

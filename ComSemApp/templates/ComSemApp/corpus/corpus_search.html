@@ -241,13 +241,14 @@
 
 		$("#DynamicField").empty();
 		$("#sortParams table").show().find("tbody").append(row_string);
-		appendCriterion(type, val, id_list)
+		appendCriterion(type, val, id_list);
 		$("button[name='SubmitSelector']").prop("disabled",false);
 	}
 
 
 	// type in ('word', 'tag')
 	function appendCriterion(type, val, id_list){
+		alert(type + ", " + val + ", " + id_list);
 		searchCriteria.push({
 			type: type,
 			val: val,
