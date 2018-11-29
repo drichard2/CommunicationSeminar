@@ -108,6 +108,7 @@ class StudentListView(AdminViewMixin, ListView):
         csv_file = request.FILES['file']
         file_data = csv_file.read().decode("utf-8")	
         lines = file_data.split("\n")
+        print(lines)
         rejectedLines = []
         for line in lines:
             print("NEW LINE")
