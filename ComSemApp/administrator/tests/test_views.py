@@ -5,7 +5,6 @@ from django.core import mail
 from ComSemApp.libs.factories import BaseTestCase
 from ComSemApp.models import *
 
-
 class TestCredentials(BaseTestCase):
     # only admin users should be able to access admin views.
 

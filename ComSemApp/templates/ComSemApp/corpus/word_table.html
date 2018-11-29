@@ -20,10 +20,11 @@
 	<tbody>
 		{% for word in words %}
 		<tr>
+			<!-- In ID field, word form is included in name to differentiate the two different tables from each other. -->
 			<td class="checkbox-cell">
 				<div class="checkbox checkbox-primary">
-					<input type="checkbox" name="selector_checked[]" value="{{ word.id }}" id="result{{ forloop.counter }}">
-					<label for="result{{ forloop.counter }}"></label>
+					<input type="checkbox" name="selector_checked[]" value="{{ word.id }}" id="result_{{ word.form }}{{ forloop.counter }}" onclick="getCheckedValue(this.value, '{{ word.form}}')">
+					<label for="result_{{ word.form }}{{ forloop.counter }}"></label>
 				</div>
 			</td>
 			<td>{{ word.form }}</td>

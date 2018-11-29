@@ -18,11 +18,12 @@ from ComSemApp.models import *
 @login_required
 def corpus_search(request):
     tags = Tag.objects.all()
-    template = loader.get_template('ComSemApp/corpus/corpus_search.html')
-    return HttpResponse(template.render({'tags': tags}, request))
+    template = loader.get_template('ComSemApp/corpus/corpus_search_new.html')
+    return HttpResponse(template.render({'tags': tags, 'offsetRange':range(-5,8)}, request))
 
 @login_required
 def populate_word_tag(request):
+    print("Starting populate word tag")
     val = request.POST.get('val', None)
     search_type = request.POST.get('type', None)
     output = request.POST.get('output', None)
@@ -66,7 +67,7 @@ def search_results(request):
     search_criteria = json.loads(search_criteria)
 
     query = build_query(len(search_criteria) - 1, search_criteria, sequential_search)
-    print(query)
+    print("Search query:", query)
     with connection.cursor() as cursor:
         expression_ids = []
         cursor.execute(query)
