@@ -121,42 +121,50 @@ class StudentListView(AdminViewMixin, ListView):
                 if len(line): #make sure line isnt empty
                     fields = line.split(",")
                     okToCreate = True
+                    rejected = False
                     linecount += 1
                     if (fields[0] == "" or fields[0] == ""):
                         #end of file
                         break
                     if (fields[0].isalpha() == False or fields[1].isalpha() == False):
-                        message = (str(linecount) + " " + fields[0] + " " + fields[1] + " " + fields[2] + "        Invalid First or Last Name \n")
+                        message = (str(linecount) + " " + fields[0] + " " + fields[1] + "      " + fields[2] + "        Invalid First or Last Name \n")
                         message_content.append(message)
-                        okToCreate = False
+            
                         rejectcount += 1
-                        break
+                        rejected = True
+                        okToCreate = False
                     for user in Student.objects.filter(institution=self.institution):
                         if(user.user.username== fields[2]):
                             okToCreate = False
-                            rejectcount += 1
-                            message = (str(linecount) + " " +  fields[0] + " " + fields[1] + " " + fields[2] + "        Duplicate Email Address \n")
+                            if (rejected == False):     ##if rejected is false, we need to increment the number of rejects, if its already false, dont increment it but still log error
+                                rejectcount += 1
+                                rejected = True
+                            message = (str(linecount) + " " +  fields[0] + " " + fields[1] + "      " + fields[2] + "        Duplicate Email Address \n")
                             message_content.append(message)
                             break
                     
                     # Check if a valid email address
                     match = re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', fields[2])
                     if (match == None):
+                        if(rejected == False):
+                            rejectcount += 1
+                            rejected = True
                         okToCreate = False 
-                        rejectcount += 1
-                        message = (str(linecount) + " " + fields[0] + " " + fields[1] + " " + fields[2] + "        Invalid Email Address \n")
+                        message = (str(linecount) + " " + fields[0] + " " + fields[1] + "      " + fields[2] + "        Invalid Email Address \n")
                         message_content.append(message)
-                    user = {
-                        "first_name": fields[0],
-                        "last_name": fields[1],
-                        "email": fields[2],
-                        "username": fields[2] #using email as username so teacher doesnt need to make usernames for everyone
-                    }
                     if (okToCreate == True):
+                        user = {
+                            "first_name": fields[0],
+                            "last_name": fields[1],
+                            "email": fields[2],
+                            "username": fields[2] #using email as username so teacher doesnt need to make usernames for everyone
+                        }
                         self.db_create_student(**user)
                         print("student made")
                         print(user)
-            message_content.insert(0, ("" +  str((linecount - rejectcount)) + "/" + str(linecount)+ " Accounts created sucessfully\n" + "The below users were not added, Their line numbers are listed to the left \n \n"))
+            message_content.insert(0, ("" +  str((linecount - rejectcount)) + "/" + str(linecount)+ " Accounts created sucessfully\n" + "The below users were not added, Their line numbers are listed to the left,\nLines with multiple errors will be listed multiple times \n \n"))
+            print("linecount" + str(linecount))
+            print("rejected lines" + str(rejectcount))
             message_disp = "".join(message_content)
             messages.add_message(request, messages.ERROR, message_disp)
         return HttpResponseRedirect(self.success_url)
