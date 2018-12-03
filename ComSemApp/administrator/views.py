@@ -130,6 +130,7 @@ class StudentListView(AdminViewMixin, ListView):
                         message_content.append(message)
                         okToCreate = False
                         rejectcount += 1
+                        break
                     for user in Student.objects.filter(institution=self.institution):
                         if(user.user.username== fields[2]):
                             okToCreate = False
