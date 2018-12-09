@@ -126,38 +126,64 @@ class StudentListView(AdminViewMixin, ListView):
                     if (fields[0] == "" or fields[0] == ""):
                         #end of file
                         break
-                    if (fields[0].isalpha() == False or fields[1].isalpha() == False):
-                        message = (str(linecount) + " " + fields[0] + " " + fields[1] + "      " + fields[2] + "        Invalid First or Last Name \n")
+                    if (len(fields) < 4):
+                        message = "!!! Missing columns, please make sure you have columns as follows: firstname,lastname,email,username"
                         message_content.append(message)
-            
+                        rejected = True
+                        rejectcount += 1
+                        break
+                    if (fields[0].isalpha() == False or fields[1].isalpha() == False):
+                        message = (str(linecount) + " " + fields[0] + " " + fields[1] + "      " + fields[2] + "       " + fields[3] + "        Invalid First or Last Name \n")
+                        message_content.append(message)
                         rejectcount += 1
                         rejected = True
                         okToCreate = False
                     for user in Student.objects.filter(institution=self.institution):
-                        if(user.user.username== fields[2]):
+                        if(user.user.email== fields[2]):
                             okToCreate = False
                             if (rejected == False):     ##if rejected is false, we need to increment the number of rejects, if its already false, dont increment it but still log error
                                 rejectcount += 1
                                 rejected = True
-                            message = (str(linecount) + " " +  fields[0] + " " + fields[1] + "      " + fields[2] + "        Duplicate Email Address \n")
+                            message = (str(linecount) + " " + fields[0] + " " + fields[1] + "      " + fields[2] + "       " + fields[3] + "        Duplicate Email Address  \n")
                             message_content.append(message)
+                            
+                        if(user.user.username== fields[3]):
+                            okToCreate = False
+                            if (rejected == False):     ##if rejected is false, we need to increment the number of rejects, if its already false, dont increment it but still log error
+                                rejectcount += 1
+                                rejected = True
+                            message = (str(linecount) + " " + fields[0] + " " + fields[1] + "      " + fields[2] + "       " + fields[3] + "        Duplicate Username  \n")
+                            message_content.append(message)
+                        if(okToCreate == False):
                             break
                     
                     # Check if a valid email address
-                    match = re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', fields[2])
+                    match = re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', fields[2].lower())
+
                     if (match == None):
                         if(rejected == False):
                             rejectcount += 1
                             rejected = True
                         okToCreate = False 
-                        message = (str(linecount) + " " + fields[0] + " " + fields[1] + "      " + fields[2] + "        Invalid Email Address \n")
+                        message = (str(linecount) + " " + fields[0] + " " + fields[1] + "      " + fields[2] + "       " + fields[3] + "        Invalid Email Address  \n")
                         message_content.append(message)
+
+                    # Check for valid username
+                    usernameCheck = re.match('^[\w.@+-]+$', fields[3])
+                    if (usernameCheck == None):
+                        if(rejected == False):
+                            rejectcount += 1
+                            rejected = True
+                        okToCreate = False 
+                        message = (str(linecount) + " " + fields[0] + " " + fields[1] + "      " + fields[2] + "       " + fields[3] + "        Invalid Username  \n")
+                        message_content.append(message)
+                        
                     if (okToCreate == True):
                         user = {
                             "first_name": fields[0],
                             "last_name": fields[1],
                             "email": fields[2],
-                            "username": fields[2] #using email as username so teacher doesnt need to make usernames for everyone
+                            "username": fields[3]
                         }
                         self.db_create_student(**user)
                         print("student made")
@@ -167,6 +193,7 @@ class StudentListView(AdminViewMixin, ListView):
             print("rejected lines" + str(rejectcount))
             message_disp = "".join(message_content)
             messages.add_message(request, messages.ERROR, message_disp)
+            request.FILES.pop('file', None)
         return HttpResponseRedirect(self.success_url)
             
 
