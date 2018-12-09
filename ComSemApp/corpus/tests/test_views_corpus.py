@@ -8,7 +8,7 @@ class TestCredentials(BaseTestCase):
 
     # only students and teachers should be able to access students views.
 
-    corpus_url = reverse("corpus")
+    corpus_url = reverse("administrator:corpus:search")
     loggin_url = reverse("login")
 
     def setUp(self):
