@@ -1,6 +1,6 @@
 from django.urls import reverse
 from django.core import mail
-
+from django.conf.urls import url
 from ComSemApp.libs.factories import BaseTestCase
 from ComSemApp.models import *
 
@@ -10,6 +10,7 @@ class TestCredentials(BaseTestCase):
 
     corpus_url = reverse("corpus_search")
     loggin_url = reverse("login")
+    corpus_url = url(r'^corpus/search$', corpus_views.corpus_search, name='corpus_search')
 
     def setUp(self):
         super(TestCredentials, self).setUp()
