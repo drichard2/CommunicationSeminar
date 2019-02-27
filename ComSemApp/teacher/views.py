@@ -105,15 +105,24 @@ class CourseDetailView(TeacherCourseViewMixin, DetailView):
         ungraded = 0
         complete = 0
         incomplete = 0
+        print("HERER")
         for submission in submissions :
+            print("sub")
             if submission.worksheet.course == self.course:
+                print("HHERE COURSE")
                 if submission.status == 'ungraded':
                     ungraded = ungraded + 1
                 if submission.status == 'complete':
+                    print('Here')
                     complete = complete + 1
                 if submission.status == 'incomplete':
                     incomplete = incomplete + 1
-
+        print("ungraded")
+        print(ungraded)
+        print("complete")
+        print(complete)
+        print("incomplete")
+        print(incomplete)
 
         data['classungraded'] = ungraded
         data['classincomplete'] = incomplete

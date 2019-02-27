@@ -7,10 +7,11 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
 from django.db.models import Q
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, FormView
 from django.http import JsonResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import messages
+from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from ComSemApp.teacher import constants as teacher_constants
@@ -54,6 +55,30 @@ class ReplyView(ReplyMixin, ListView):
         context['topic_description'] = self.topic.topic
         context['discussion_board'] = True
         return context
+
+class CreateReplyView(ReplyMixin, CreateView):
+    model = Reply
+    template_name = 'ComSemApp/discussionBoard/create_reply.html'
+    fields = ["message"]
+    success_url = '/discussion_board'
+
+
+    def get_context_data(self, **kwargs):
+        print("hi")
+        context = super(CreateReplyView, self).get_context_data(**kwargs)
+        context['topic_description'] = self.topic.topic
+        context['discussion_board'] = True
+        return context
+
+    def form_invalid(self, form):
+        print("fuck no")
+        return JsonResponse(form.errors, status=400)
+
+    def form_valid(self, form):
+        print("fuck yeah")
+        return JsonResponse({}, status=200)
+
+
 
 class CreateThreadView(LoginRequiredMixin,CreateView):
     print("Hello World")

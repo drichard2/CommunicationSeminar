@@ -88,7 +88,9 @@
 				var incomplete = {{ classincomplete }};
 				var completed = {{ classcomplete }};
 				var ungraded = {{ classungraded }};
-				
+				console.log("ungraded", ungraded);
+				console.log("completed", completed);
+				console.log("incomplete", incomplete);
 				var data = google.visualization.arrayToDataTable([
 				  ['Source', 'Clicks'],
 				  ['Completed', completed],
