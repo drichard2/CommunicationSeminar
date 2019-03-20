@@ -20,9 +20,10 @@ $("#saveReply").click(function(e){
     // because of audio, we must send a formdata object
     var replyFormData = new FormData();
     replyFormData.append( 'message', $("#comment").val() );
+    
 
     $.ajax({
-        type: "Get",
+        type: "POST",
         url: $("#create_or_update_url").val(),
         data: replyFormData,
         processData: false,

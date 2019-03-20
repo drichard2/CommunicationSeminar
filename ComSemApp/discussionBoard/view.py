@@ -11,6 +11,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, F
 from django.http import JsonResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import messages
+from django.urls import reverse_lazy
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
@@ -18,6 +19,7 @@ from ComSemApp.teacher import constants as teacher_constants
 
 from ComSemApp.models import *
 from ComSemApp.libs.mixins import RoleViewMixin, CourseViewMixin, WorksheetViewMixin, SubmissionViewMixin
+from ComSemApp.administrator.forms import ReplyForm
 
 
 #This class deals with listing out all the topics within database
@@ -31,7 +33,16 @@ class TopicListView(LoginRequiredMixin,ListView):
     def get_queryset(self):
         return Topic.objects.filter()
 
-class ReplyMixin(LoginRequiredMixin, object):
+class ReplyMixin(LoginRequiredMixin, ListView, object):
+    context_object_name = 'replies'
+    template_name = 'ComSemApp/discussionBoard/add_reply.html'
+    fields = ["message", "personPosted", "topic", "hasMark"]
+    success_url = reverse_lazy("discussionBoard:topic")
+    
+    def get_form_kwargs(self):
+        kwargs = super(ReplyMixin, self).get_form_kwargs()
+        return kwargs
+
     def dispatch(self, request, *args, **kwargs):
         topic_id = kwargs.get('topic_id', None)
         topics = Topic.objects.filter(id = topic_id)
@@ -42,25 +53,68 @@ class ReplyMixin(LoginRequiredMixin, object):
     
 
 
-class ReplyView(ReplyMixin, ListView):
+class ReplyView(ReplyMixin, FormView):
     model = Reply
     template_name = 'ComSemApp/discussionBoard/reply_page.html'
     context_object_name = 'replies'
+    fields = ["message", "personPosted", "topic", "hasMark"]
 
     def get_queryset(self):
         return Reply.objects.filter(topic = self.topic)
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self ,**kwargs):
+        self.object_list = self.get_queryset()
+        print("it is calling this")
         context = super(ReplyView, self).get_context_data(**kwargs)
         context['topic_description'] = self.topic.topic
         context['discussion_board'] = True
         return context
 
-class CreateReplyView(ReplyMixin, CreateView):
+    def form_invalid(self, reply_form, **kwargs):
+        print("fuck")
+        response = super().form_invalid(form)
+        return JsonResponse(form.errors, status=400)
+    
+    
+    def get(self, request, *args, **kwargs):
+        allow_empty = True
+        reply_form = ReplyForm()
+        reply_form.prefix = 'reply_form'
+        return self.render_to_response(self.get_context_data(form=reply_form))
+
+    def post(self, request, *args, **kwargs):
+        print("is it calling this")
+        reply_form = ReplyForm(self.request.POST, prefix = 'reply_form')
+        if reply_form.is_valid():
+            print("it is giving this if statement a thing")
+            reply = reply_form.save(commit=False)
+            reply.personPosted = request.user
+            reply.topic = self.topic
+            reply.hasMark = 0
+            reply.save()
+
+            return HttpResponseRedirect(reverse("discussion_board:topic", kwargs={'topic_id': self.topic.id }))
+        else:
+            return self.form_invalid(reply_form, **kwargs)
+
+
+
+    """def form_valid(self, request, form):
+        print("ok")
+        reply = form.save()
+        reply.personPosted = request.user
+        reply.message = "this is a test"
+        reply.topic = self.topic
+        reply.hasMark = 0
+        reply.save()
+        return JsonResponse({}, status=200)"""
+
+class CreateReplyView(ReplyMixin, FormView):
     model = Reply
-    template_name = 'ComSemApp/discussionBoard/create_reply.html'
-    fields = ["message"]
-    success_url = '/discussion_board'
+    template_name = 'ComSemApp/discussionBoard/add_reply.html'
+    fields = ["message", "personPosted", "topic", "hasMark"]
+    success_url = reverse_lazy("discussionBoard:topic")
+
 
 
     def get_context_data(self, **kwargs):
@@ -70,13 +124,30 @@ class CreateReplyView(ReplyMixin, CreateView):
         context['discussion_board'] = True
         return context
 
-    def form_invalid(self, form):
-        print("fuck no")
+    def form_invalid(self, reply_form, **kwargs):
+        print("fuck")
+        response = super().form_invalid(form)
         return JsonResponse(form.errors, status=400)
+    
+    
+    def get(self, request, *args, **kwargs):
+        reply_form = ReplyForm()
+        reply_form.prefix = 'reply_form'
+        return self.render_to_response(self.get_context_data(form=reply_form))
 
-    def form_valid(self, form):
-        print("fuck yeah")
-        return JsonResponse({}, status=200)
+    def post(self, request, *args, **kwargs):
+        print("is it calling this")
+        reply_form = ReplyForm(self.request.post, prefix = 'reply_form')
+        if reply_form.is_valid():
+            reply = reply_form.save()
+            reply.personPosted = request.user
+            reply.topic = self.topic
+            reply.hasMark = 0
+            reply.save()
+
+            return HttpResponseRedirect(self.success_url)
+        else:
+            return self.form_invalid(reply_form, **kwargs)
 
 
 
