@@ -8,9 +8,21 @@
             </h4>
         </div>
         <div class="col-md-6">
-            <a class="btn btn-sm btn-outline-info pull-right" href="{% url 'discussion_board:create_topic' %}">
-                <i class="fa fa-plus"></i>
-            </a>
+            {% if current_role %}
+                {% if current_role == "teacher" %}
+                    <a class="btn btn-sm btn-outline-info pull-right" href="{% url 'teacher:create_topic' %}">
+                        <i class="fa fa-plus"></i>
+                    </a>
+                {% elif current_role == "admin" %}
+                    <a class="btn btn-sm btn-outline-info pull-right" href="{% url 'admin:create_topic' %}">
+                        <i class="fa fa-plus"></i>
+                    </a>
+                {% elif current_role == "student" %}
+                    <a class="btn btn-sm btn-outline-info pull-right" href="{% url 'student:create_topic' %}">
+                        <i class="fa fa-plus"></i>
+                    </a>
+                {% endif %}
+            {% endif %}	
         </div>
     </div>
 
@@ -30,7 +42,15 @@
                     <td>{{topic.personPosted}}</td>
                     <td>{{topic.topic}}</td>
                     <td>
-                        <a href="{% url 'discussion_board:topic' topic.id %}" class="btn btn-sm btn-outline-primary">Go To Thread</a>
+                        {% if current_role %}
+                            {% if current_role == "teacher" %}
+                                <a href="{% url 'teacher:topic' topic.id %}" class="btn btn-sm btn-outline-primary">Go To Thread</a>
+                            {% elif current_role == "admin" %}
+                                <a href="{% url 'admin:topic' topic.id %}" class="btn btn-sm btn-outline-primary">Go To Thread</a>
+                            {% elif current_role == "student" %}
+                                <a href="{% url 'student:topic' topic.id %}" class="btn btn-sm btn-outline-primary">Go To Thread</a>
+                            {% endif %}
+                        {% endif %}		
                     </td>
                 </tr>
                 {% endfor %}

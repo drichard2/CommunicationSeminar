@@ -175,12 +175,6 @@
 							</a>
 						</li>
 						<li>
-								<a href="http://localhost:8000/discussion_board">
-									<i class="ti-blackboard"></i>
-									<span>Discussion Board</span>
-								</a>
-							</li>
-						<li>
 							<a href="{% url 'administrator:sessions' %}">
 								<i class="ion-calendar ion-sm"></i>
 								<span>Sessions</span>
@@ -205,6 +199,14 @@
 							</ul>
 						</li>
 					</ul>
+					<ul>
+						<li>
+							<a href="{% url 'admin:discussion_board' %}">
+								<i class="ti-blackboard"></i>
+								<span>Discussion Board</span>
+							</a>
+						</li>
+					</ul>
 					{% elif current_role == "teacher" %}
 					<ul>
 						<li>
@@ -225,6 +227,14 @@
 							</ul>
 						</li>
 					</ul>
+					<ul>
+						<li>
+							<a href="{% url 'teacher:discussion_board' %}">
+								<i class="ti-blackboard"></i>
+								<span>Discussion Board</span>
+							</a>
+						</li>
+					</ul>
 					{% elif current_role == "student" %}
 					<ul>
 						<li>
@@ -234,7 +244,15 @@
 							</a>
 						</li>
 					</ul>
-					{% endif %}
+					<ul>
+						<li>
+							<a href="{% url 'student:discussion_board' %}">
+								<i class="ti-blackboard"></i>
+								<span>Discussion Board</span>
+							</a>
+						</li>
+					</ul>
+					{% endif %}					
 				</div>
 				<div class="clearfix"></div>
 			</div>

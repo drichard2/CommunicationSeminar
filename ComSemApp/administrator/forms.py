@@ -92,3 +92,10 @@ class ReplyForm(ModelForm):
     class Meta:
         model = Reply
         fields = ["message"]
+
+class TopicForm(ModelForm):
+    message = forms.CharField( widget=forms.Textarea(attrs={'style': "width:100%"}))
+    title = forms.CharField(widget=forms.TextInput(attrs={'style': "width:100%"}))
+    class Meta:
+        model = Reply
+        fields = ["title", "message"]
