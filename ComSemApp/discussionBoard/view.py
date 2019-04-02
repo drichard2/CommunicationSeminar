@@ -13,6 +13,7 @@ from django.urls import reverse
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django import forms
+from django.urls import resolve
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from ComSemApp.teacher import constants as teacher_constants
@@ -81,6 +82,7 @@ class ReplyView(ReplyMixin, FormView):
         return self.render_to_response(self.get_context_data(form=reply_form))
 
     def post(self, request, *args, **kwargs):
+        current_url = resolve(request.path_info).url_name
         reply_form = ReplyForm(self.request.POST, prefix = 'reply_form')
         if reply_form.is_valid():
             print("it is giving this if statement a thing")
@@ -90,7 +92,14 @@ class ReplyView(ReplyMixin, FormView):
             reply.hasMark = 0
             reply.save()
 
-            return HttpResponseRedirect(reverse("discussion_board:topic", kwargs={'topic_id': self.topic.id }))
+            if current_url == "admin_topic":
+                return HttpResponseRedirect(reverse("administrator:admin_topic", kwargs={'topic_id': self.topic.id }))
+            elif current_url == "teacher_topic":
+                return HttpResponseRedirect(reverse("teacher:teacher_topic", kwargs={'topic_id': self.topic.id }))
+            elif current_url == "student_topic":
+                return HttpResponseRedirect(reverse("student:student_topic", kwargs={'topic_id': self.topic.id }))
+            else:
+                return HttpResponseRedirect(reverse("discussion_board:topic", kwargs={'topic_id': self.topic.id }))
         else:
             return self.form_invalid(reply_form, **kwargs)
 
@@ -114,6 +123,7 @@ class CreateThreadView(LoginRequiredMixin,FormView):
     
     def post(self, request, *args, **kwargs):
         topic_form = TopicForm(self.request.POST, prefix = 'topic_form')
+        current_url = resolve(request.path_info).url_name
         if topic_form.is_valid():
             topic = Topic(personPosted = request.user, topic = topic_form.cleaned_data["title"])
             topic.save()
@@ -122,7 +132,13 @@ class CreateThreadView(LoginRequiredMixin,FormView):
             reply.topic = topic
             reply.hasMark = 0
             reply.save()
-
-            return HttpResponseRedirect(reverse("discussion_board:topic", kwargs={'topic_id': topic.id }))
+            if current_url == "admin_create_topic":
+                return HttpResponseRedirect(reverse("administrator:admin_topic", kwargs={'topic_id': topic.id }))
+            elif current_url == "teacher_create_topic":
+                return HttpResponseRedirect(reverse("teacher:teacher_topic", kwargs={'topic_id': topic.id }))
+            elif current_url == "student_create_topic":
+                return HttpResponseRedirect(reverse("student:student_topic", kwargs={'topic_id': topic.id }))
+            else:
+                return HttpResponseRedirect(reverse("discussion_board:topic", kwargs={'topic_id': topic.id }))
         else:
             return self.form_invalid(topic_form, **kwargs)
