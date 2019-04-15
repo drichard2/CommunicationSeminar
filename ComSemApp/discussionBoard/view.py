@@ -71,9 +71,8 @@ class ReplyView(ReplyMixin, FormView):
         return context
 
     def form_invalid(self, reply_form, **kwargs):
-        response = super().form_invalid(form)
-        return JsonResponse(form.errors, status=400)
-    
+        response = super().form_invalid(reply_form)
+        return JsonResponse(reply_form.errors, status=400)
     
     def get(self, request, *args, **kwargs):
         allow_empty = True
@@ -84,7 +83,35 @@ class ReplyView(ReplyMixin, FormView):
     def post(self, request, *args, **kwargs):
         current_url = resolve(request.path_info).url_name
         reply_form = ReplyForm(self.request.POST, prefix = 'reply_form')
-        if reply_form.is_valid():
+        likeButton = request.POST.get("like")
+        dislikeButton = request.POST.get("dislike")
+        if likeButton:
+            print(likeButton)
+            reply = Reply.objects.get(id = int(likeButton))
+            reply.hasMark = 1
+            reply.save()
+            if current_url == "admin_topic":
+                return HttpResponseRedirect(reverse("administrator:admin_topic", kwargs={'topic_id': self.topic.id }))
+            elif current_url == "teacher_topic":
+                return HttpResponseRedirect(reverse("teacher:teacher_topic", kwargs={'topic_id': self.topic.id }))
+            elif current_url == "student_topic":
+                return HttpResponseRedirect(reverse("student:student_topic", kwargs={'topic_id': self.topic.id }))
+            else:
+                return HttpResponseRedirect(reverse("discussion_board:topic", kwargs={'topic_id': self.topic.id }))
+        elif dislikeButton:
+            print(dislikeButton)
+            reply = Reply.objects.get(id = int(dislikeButton))
+            reply.hasMark = 0
+            reply.save()
+            if current_url == "admin_topic":
+                return HttpResponseRedirect(reverse("administrator:admin_topic", kwargs={'topic_id': self.topic.id }))
+            elif current_url == "teacher_topic":
+                return HttpResponseRedirect(reverse("teacher:teacher_topic", kwargs={'topic_id': self.topic.id }))
+            elif current_url == "student_topic":
+                return HttpResponseRedirect(reverse("student:student_topic", kwargs={'topic_id': self.topic.id }))
+            else:
+                return HttpResponseRedirect(reverse("discussion_board:topic", kwargs={'topic_id': self.topic.id }))
+        elif reply_form.is_valid():
             print("it is giving this if statement a thing")
             reply = reply_form.save(commit=False)
             reply.personPosted = request.user

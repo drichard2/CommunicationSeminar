@@ -8,13 +8,14 @@
             </h4>
         </div>
     </div>
-    <div class = "row mt-2">
+    <div class = "row mt-3 cs-admin-table">
         {% if replies %}
         <table class="table table-hover tablesorter">
             <thead>
                 <tr>
                     <th>Person Posted</th>
                     <th>Message</th>
+                    <th>Starred</th>
                 </tr>
             </thead>
             <tbody>
@@ -22,6 +23,27 @@
                 <tr reply_id = "{{ reply.id }}">
                     <td>{{reply.personPosted}}</td>
                     <td>{{reply.message}}</td>
+                    <td>
+                        {% if reply.hasMark == 1 %}
+                        <i class="ion-ios7-star"></i>
+                        {% else %}
+                        <i class="ion-ios7-star-outline"></i>
+                        {% endif %}	
+
+                        {% if current_role %}
+                            {% if current_role == "teacher" or current_role == "admin" %}
+                                <form class="" action="" method="POST">
+                                    {% csrf_token %}
+                                    {% if reply.hasMark == 1%}
+                                    <button class="btn btn-sm btn-outline-primary" type="Submit" name="dislike" value="{{ reply.id }}">Dislike</button>
+                                    {% else %}
+                                    <button class="btn btn-sm btn-outline-primary" type="Submit" name="like" value="{{ reply.id }}">Like</button>
+                                    {% endif %}
+                                </form>
+
+                            {% endif %}
+                        {% endif %}	
+                    </td>
                 </tr>
                 {% endfor %}
                 {% include 'ComSemApp/tablesorter_footer.html' %}
