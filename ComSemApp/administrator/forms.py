@@ -88,7 +88,7 @@ class StudentForm(ModelForm):
         fields = ['country', 'language']
 
 class ReplyForm(ModelForm):
-    message = forms.CharField( widget=forms.Textarea(attrs={'style': "width:100%"}))
+    message = forms.CharField( widget=forms.Textarea(attrs={'style': "width:100%", 'placeholder': 'Enter reply here.'}))
     class Meta:
         model = Reply
         fields = ["message"]
