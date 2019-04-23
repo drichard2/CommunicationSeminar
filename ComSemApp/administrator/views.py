@@ -133,6 +133,8 @@ class StudentListView(AdminViewMixin, ListView):
                         rejectcount += 1
                         break
                     if (fields[0].isalpha() == False or fields[1].isalpha() == False):
+                        print(fields[0])
+                        print(fields[1])
                         message = (str(linecount) + " " + fields[0] + " " + fields[1] + "      " + fields[2] + "       " + fields[3] + "        Invalid First or Last Name \n")
                         message_content.append(message)
                         rejectcount += 1
