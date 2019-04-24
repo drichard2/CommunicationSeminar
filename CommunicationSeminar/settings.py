@@ -35,6 +35,7 @@ ALLOWED_HOSTS = [
     '.comsem.net',
     '127.0.0.1',
     'comsem.localhost.run'
+    'comsem8.localhost.run'
 ]
 
 # Application definition
