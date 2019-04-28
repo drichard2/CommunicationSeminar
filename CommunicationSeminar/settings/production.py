@@ -192,9 +192,9 @@ LOGGING = {
         },
     },
     'handlers': {
-    'null': {
-        'level': 'DEBUG',
-        'class': 'logging.NullHandler',
-    },
-}
+        'null': {
+            'level': 'DEBUG',
+            'class': 'logging.NullHandler',
+        },
+    }
 }
