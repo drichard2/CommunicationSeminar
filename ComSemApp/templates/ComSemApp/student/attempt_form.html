@@ -1,8 +1,8 @@
 {% load static %}
 
 <!-- recordmp3 needed by ComSemRecording -->
-<script src="{% static "ComSemApp/js/opus-recorder/dist/recorder.min.js" %}"></script>
-<script src="{% static "ComSemApp/js/ComSemRecording-opus.js" %}?{% now "U" %}"></script>
+<script src="{% static 'ComSemApp/js/opus-recorder/dist/recorder.min.js' %}"></script>
+<script src="{% static 'ComSemApp/js/ComSemRecording-opus.js' %}?{% now "U" %}"></script>
 
 <input hidden type="text" id="create_or_update_url">
 
@@ -95,26 +95,33 @@
 
 
 <script>
+<<<<<<< HEAD
+=======
+var speaking = false;
+
+$('#GoogleTest').click(function() {
+    // new plan: Google button works like the record and stop button
+    // in the existing reformulation recording.
+    $('#googleTranscription').html("<p>Speak now</p>");
+});
+
+>>>>>>> f84ac645707ad43eb89f4a47ceafe60c88fc8307
 $("#saveAttempt").click(function(e){
     e.preventDefault()
-
     if( $("#CorrectedExpr").val().trim() == "" ){
         // must have a valid expression
         alert("Please enter a correction")
         return;
     }
-
     // because of audio, we must send a formdata object
     var attemptFormData = new FormData();
     attemptFormData.append( 'reformulation_text', $("#CorrectedExpr").val() );
-
     var reformulation_audio = $("#recordingslist #audioElement").length > 0 ? true : false
     if (reformulation_audio){
         attemptFormData.append( 'audio', audioReformulationBlob )
     } else {
         attemptFormData.append('delete_audio', true)
     }
-
     $.ajax({
         type: "POST",
         url: $("#create_or_update_url").val(),
@@ -130,7 +137,6 @@ $("#saveAttempt").click(function(e){
             cs_ajax_error(jqXHR, textStatus, errorThrown)
         },
     });
-
     clearEditor()
 });
 </script>
